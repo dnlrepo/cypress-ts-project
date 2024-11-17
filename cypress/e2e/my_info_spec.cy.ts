@@ -88,25 +88,7 @@ describe('When navigating to the homepage', () => {
           expect(response.statusCode).to.eq(200); // Ensure successful response
           cy.fixture('user_details.json').then((testData) => {
             // Reassign testData to the data property for simpler access
-            testData = testData.data;
-            const expectedData = {
-              empNumber: 7,
-              lastName: testData.lastName,
-              firstName: testData.firstName,
-              middleName: testData.middleName,
-              employeeId: testData.employeeId,
-              otherId: testData.otherId,
-              drivingLicenseNo: testData.drivingLicenseNo,
-              drivingLicenseExpiredDate: testData.drivingLicenseExpiredDate,
-              gender: 1,
-              maritalStatus: testData.maritalStatus,
-              birthday: testData.birthday,
-              terminationId: null,
-              nationality: {
-                id: 68,
-                name: testData.nationality.name,
-              },
-            };
+            const expectedData = testData.data;
 
             const actualData = response.body.data;
 
