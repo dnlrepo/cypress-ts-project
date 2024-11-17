@@ -1,0 +1,29 @@
+{
+  "id": 17,
+  "post": {
+    "id": 9
+  },
+  "type": "text",
+  "liked": false,
+  "text": "Mocked data test",
+  "employee": {
+    "empNumber": 7,
+    "lastName": "Doe",
+    "firstName": "John",
+    "middleName": "Michael",
+    "employeeId": "muser",
+    "terminationId": null
+  },
+  "stats": {
+    "numOfLikes": 5,
+    "numOfComments": 3,
+    "numOfShares": 1
+  },
+  "createdDate": "2024-11-17",
+  "createdTime": "12:26",
+  "originalPost": null,
+  "permission": {
+    "canUpdate": true,
+    "canDelete": true
+  }
+}
