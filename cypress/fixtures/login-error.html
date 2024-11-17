@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OrangeHRM</title>
+    <link rel="icon" href="/web/dist/favicon.ico?v=1721393199309" />
+    <link
+      href="/web/dist/css/chunk-vendors.css?v=1721393199309"
+      rel="preload"
+      as="style"
+    />
+    <link
+      href="/web/dist/css/app.css?v=1721393199309"
+      rel="preload"
+      as="style"
+    />
+    <link
+      href="/web/dist/js/chunk-vendors.js?v=1721393199309"
+      rel="preload"
+      as="script"
+    />
+    <link
+      href="/web/dist/js/app.js?v=1721393199309"
+      rel="preload"
+      as="script"
+    />
+    <link
+      href="/web/dist/css/chunk-vendors.css?v=1721393199309"
+      rel="stylesheet"
+    />
+    <link href="/web/dist/css/app.css?v=1721393199309" rel="stylesheet" />
+  </head>
+  <body>
+    <style>
+      :root {
+        --oxd-primary-one-color: #ff7b1d;
+        --oxd-primary-font-color: #ffffff;
+        --oxd-secondary-four-color: #76bc21;
+        --oxd-secondary-font-color: #ffffff;
+        --oxd-primary-gradient-start-color: #ff920b;
+        --oxd-primary-gradient-end-color: #f35c17;
+        --oxd-secondary-gradient-start-color: #ff920b;
+        --oxd-secondary-gradient-end-color: #f35c17;
+        --oxd-primary-one-lighten-5-color: #ff8a37;
+        --oxd-primary-one-lighten-30-color: #ffd4b6;
+        --oxd-primary-one-darken-5-color: #ff6c03;
+        --oxd-primary-one-alpha-10-color: rgba(255, 123, 29, 0.1);
+        --oxd-primary-one-alpha-15-color: rgba(255, 123, 29, 0.15);
+        --oxd-primary-one-alpha-20-color: rgba(255, 123, 29, 0.2);
+        --oxd-primary-one-alpha-50-color: rgba(255, 123, 29, 0.5);
+        --oxd-secondary-four-lighten-5-color: #84d225;
+        --oxd-secondary-four-darken-5-color: #68a61d;
+        --oxd-secondary-four-alpha-10-color: rgba(118, 188, 33, 0.1);
+        --oxd-secondary-four-alpha-15-color: rgba(118, 188, 33, 0.15);
+        --oxd-secondary-four-alpha-20-color: rgba(118, 188, 33, 0.2);
+        --oxd-secondary-four-alpha-50-color: rgba(118, 188, 33, 0.5);
+      }
+    </style>
+    <noscript>
+      <strong>
+        We're sorry but orangehrm doesn't work properly without JavaScript
+        enabled. Please enable it to continue.
+      </strong>
+    </noscript>
+
+    <div id="app">
+      <auth-login
+        :error='{"error":"api_error_handling_response","message":"API error handling response"}'
+        :token='"bd76b42e7704.i6i2cvIplq9avhOqX0bvqDnu55AEKkcnHjfHNq20MQg.1NLhCKMYptoy-3jAb3OIml6ZvtxSGAwQUG-0fuf7Vzze2t5GolDl_yzHKw"'
+        :login-logo-src='"\/web\/images\/ohrm_logo.png"'
+        :login-banner-src='"\/web\/images\/ohrm_branding.png?v=1721393199309"'
+        :show-social-media="true"
+        :is-demo-mode="true"
+        :authenticators="[]"
+      >
+        <template v-slot:footer>
+          <div class="orangehrm-copyright-wrapper">
+            <oxd-text tag="p" class="orangehrm-copyright"
+              >OrangeHRM OS 5.7</oxd-text
+            >
+            <oxd-text tag="p" class="orangehrm-copyright"
+              >&copy; 2005 - 2024
+              <a href="http://www.orangehrm.com" target="_blank"
+                >OrangeHRM, Inc</a
+              >. All rights reserved.</oxd-text
+            >
+          </div>
+        </template>
+      </auth-login>
+    </div>
+    <script type="text/javascript">
+      window.appGlobal = {
+        baseUrl: '/web/index.php',
+        publicPath: '/web',
+      };
+    </script>
+    <script src="/web/dist/js/chunk-vendors.js?v=1721393199309"></script>
+    <script src="/web/dist/js/app.js?v=1721393199309"></script>
+  </body>
+</html>
