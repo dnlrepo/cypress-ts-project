@@ -1,100 +1,121 @@
-import moment from 'moment-timezone';
+import { selectors } from 'cypress/fixtures/selectors';
+
+// Utility Functions
+
+const validatePostStats = (
+  post: any,
+  likesSelector: string,
+  commentsSelector: string,
+  sharesSelector?: string
+) => {
+  cy.get(likesSelector)
+    .contains(`${post.stats.numOfLikes} Like`)
+    .should('be.visible');
+
+  cy.get(commentsSelector)
+    .contains(`${post.stats.numOfComments} Comment`)
+    .should('be.visible');
+
+  if (sharesSelector) {
+    cy.get(sharesSelector)
+      .contains(`${post.stats.numOfShares} Share`)
+      .should('be.visible');
+  }
+};
+
+const findAndInteractWithPost = (
+  date: string,
+  time: string,
+  action: (postElement: Cypress.Chainable) => void
+) => {
+  cy.findPostByDateTime(date, time)
+    .should('be.visible')
+    .parents(selectors.buzzPost)
+    .within(() => action(cy.wrap(this)));
+};
+
 describe('When navigating to the homepage', () => {
   beforeEach(() => {
-    cy.visit('/'); // Navigate to the login page
+    cy.visit('/');
     cy.intercept('POST', '/web/index.php/auth/validate').as(
       'loginValidationRequest'
-    ); // Intercept the login API request
+    );
   });
+
   describe('when entering valid login credentials', () => {
     beforeEach(() => {
-      // Enter valid credentials
-      cy.get('input[name="username"]').type('Admin');
-      cy.get('input[name="password"]').type('admin123');
-      cy.get('button[type="submit"]').click();
+      cy.clearAndType(selectors.usernameInput, 'Admin');
+      cy.clearAndType(selectors.passwordInput, 'admin123');
+      cy.get(selectors.submitButton).click();
     });
 
     describe('when navigating to the Buzz page and intercepting the first post request', () => {
-      let firstPost: any = null;
-      beforeEach(() => {
-        // Navigate to the Buzz page
-        cy.contains('Buzz').click();
+      let firstPost: any;
 
-        // Intercept the feed API request
+      beforeEach(() => {
+        cy.contains(selectors.buzzTab).click();
+
         cy.intercept(
           'GET',
           '/web/index.php/api/v2/buzz/feed?limit=10&offset=0&sortOrder=DESC&sortField=share.createdAtUtc'
         ).as('getFeed');
 
-        // Wait for the API response
         cy.wait('@getFeed').then((interception) => {
-          // Get the first post from the API response
           firstPost = interception.response?.body.data[0];
         });
       });
 
       it('should show the likes and comments count according to the API response', () => {
-        // Assert the first post data exists
         expect(firstPost).to.exist;
 
-        cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
-          .should('be.visible')
-          .parents('.orangehrm-buzz') // Navigate to the parent post element
-          .within(() => {
-            // Validate likes count
-            cy.get('.orangehrm-buzz-stats-row')
-              .eq(0) // First row for likes
-              .contains(`${firstPost.stats.numOfLikes} Like`)
-              .should('be.visible');
-
-            // Validate comments count
-            cy.get('.orangehrm-buzz-stats-row')
-              .eq(1) // Second row for comments and shares
-              .contains(`${firstPost.stats.numOfComments} Comment`)
-              .should('be.visible');
-          });
+        findAndInteractWithPost(
+          firstPost.createdDate,
+          firstPost.createdTime,
+          () => {
+            validatePostStats(
+              firstPost,
+              selectors.buzzStatsRow,
+              selectors.buzzStatsRow
+            );
+          }
+        );
       });
 
       describe('when clicking the like button', () => {
-        let initialLikes: any = null;
+        let initialLikes: any;
+
         beforeEach(() => {
-          // Locate the first post in the UI using the post text
-          cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
-            .should('be.visible')
-            .parents('.orangehrm-buzz') // Navigate to the parent post element
-            .within(() => {
-              // Get initial likes count
+          findAndInteractWithPost(
+            firstPost.createdDate,
+            firstPost.createdTime,
+            (postElement) => {
               initialLikes = firstPost.stats.numOfLikes;
 
-              // Validate initial likes count
-              cy.get('.orangehrm-buzz-stats-row')
-                .eq(0) // First row for likes
-                .contains(`${initialLikes} Like`)
-                .should('be.visible');
+              validatePostStats(
+                firstPost,
+                selectors.buzzStatsRow,
+                selectors.buzzStatsRow
+              );
 
-              // Determine the request type based on current `liked` state
               const likeAction = firstPost.liked ? 'DELETE' : 'POST';
 
-              // Intercept the like/unlike API request
               cy.intercept(
                 likeAction,
                 `/web/index.php/api/v2/buzz/shares/${firstPost.id}/likes`
               ).as('likeAction');
 
-              // Click the like button
-              cy.get('#heart-svg').click();
-            });
+              postElement.get(selectors.likeButton).click();
+            }
+          );
         });
 
-        it('should the like count change in the UI', () => {
-          // Wait for the like API response
+        it('should update the like count in the UI', () => {
           cy.wait('@likeAction').then(() => {
-            // Validate the updated likes count in the UI
             const updatedLikes = firstPost.liked
-              ? initialLikes - 1 // If the post was liked, unliking reduces the count
-              : initialLikes + 1; // Otherwise, liking increases the count
+              ? initialLikes - 1
+              : initialLikes + 1;
 
-            cy.get('.orangehrm-buzz-stats-row')
+            cy.get(selectors.buzzStatsRow)
               .eq(0)
               .contains(`${updatedLikes} Like`)
               .should('be.visible');
@@ -104,45 +125,37 @@ describe('When navigating to the homepage', () => {
 
       describe('when posting a new comment', () => {
         beforeEach(() => {
-          cy.wait('@getFeed').then((interception) => {
-            // Locate the first post in the UI using the post text
-            cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
-              .should('be.visible')
-              .parents('.orangehrm-buzz') // Navigate to the parent post element
-              .within(() => {
-                // Verify initial comment count from API matches UI
-                cy.contains(
-                  '.orangehrm-buzz-stats-row',
-                  `${firstPost.stats.numOfComments} Comment`
-                ).should('be.visible');
+          findAndInteractWithPost(
+            firstPost.createdDate,
+            firstPost.createdTime,
+            (postElement) => {
+              validatePostStats(
+                firstPost,
+                selectors.buzzStatsRow,
+                selectors.buzzStatsRow
+              );
 
-                // Click the "Comment" icon to open the comment textbox
-                cy.get('.oxd-icon.bi-chat-text-fill').click();
+              postElement.get(selectors.commentIcon).click();
 
-                // Intercept the POST request for adding a comment
-                cy.intercept(
-                  'POST',
-                  `/web/index.php/api/v2/buzz/shares/${firstPost.id}/comments`
-                ).as('addComment');
+              cy.intercept(
+                'POST',
+                `/web/index.php/api/v2/buzz/shares/${firstPost.id}/comments`
+              ).as('addComment');
 
-                // Add a new comment
-                const newCommentText = 'This is a new comment!';
-                cy.get('[placeholder="Write your comment..."]')
-                  .type(newCommentText)
-                  .type('{enter}');
-              });
-          });
+              cy.clearAndType(
+                selectors.commentInput,
+                'This is a new comment!'
+              ).type('{enter}');
+            }
+          );
         });
 
-        it('should validate comment count updates after adding a comment', () => {
-          // Wait for the POST request to complete
-          cy.wait('@addComment').then((postInterception) => {
-            // Validate that the POST request was successful
-            expect(postInterception.response?.statusCode).to.equal(200);
+        it('should update the comment count in the UI', () => {
+          cy.wait('@addComment').then((interception) => {
+            expect(interception.response?.statusCode).to.equal(200);
 
-            // Verify the updated comment count in the UI
             cy.contains(
-              '.orangehrm-buzz-stats-row',
+              selectors.buzzStatsRow,
               `${firstPost.stats.numOfComments + 1} Comment`
             ).should('be.visible');
           });
@@ -154,7 +167,6 @@ describe('When navigating to the homepage', () => {
       let mockedFirstPost: any;
 
       beforeEach(() => {
-        // Load the mocked post data from the fixture
         cy.fixture('mocked_first_post.json').then((data) => {
           mockedFirstPost = data;
 
@@ -173,96 +185,86 @@ describe('When navigating to the homepage', () => {
           ).as('mockedFeed');
         });
 
-        // Navigate to the Buzz page
-        cy.contains('Buzz').click();
+        cy.contains(selectors.buzzTab).click();
 
-        // Wait for the mocked feed API response
         cy.wait('@mockedFeed');
       });
 
       it('should display the mocked post data correctly in the UI', () => {
-        // Locate the mocked post in the UI using the mocked text
-        cy.contains('.orangehrm-buzz-post-body-text', mockedFirstPost.text)
+        cy.findPostByDateTime(
+          mockedFirstPost.createdDate,
+          mockedFirstPost.createdTime
+        )
           .should('be.visible')
-          .parents('.orangehrm-buzz') // Navigate to the parent post element
+          .parents(selectors.buzzPost)
           .within(() => {
             // Validate likes count
-            cy.get('.orangehrm-buzz-stats-row')
+            cy.get(selectors.buzzStatsRow)
               .eq(0) // First row for likes
               .contains(`${mockedFirstPost.stats.numOfLikes} Like`)
               .should('be.visible');
 
             // Validate comments count
-            cy.get('.orangehrm-buzz-stats-row')
+            cy.get(selectors.buzzStatsRow)
               .eq(1) // Second row for comments and shares
               .contains(`${mockedFirstPost.stats.numOfComments} Comment`)
               .should('be.visible');
 
             // Validate shares count
-            cy.get('.orangehrm-buzz-stats-row')
+            cy.get(selectors.buzzStatsRow)
               .contains(`${mockedFirstPost.stats.numOfShares} Share`)
               .should('be.visible');
           });
       });
     });
+
     describe('When Simulating No Response from Server on Like Action', () => {
       let firstPost: any;
 
       beforeEach(() => {
-        // Handle uncaught exceptions to prevent test failure
         cy.on('uncaught:exception', (err) => {
-          if (err.message.includes('Network Error')) {
-            // Returning false prevents Cypress from failing the test
-            return false;
-          }
+          if (err.message.includes('Network Error')) return false;
         });
 
-        // Intercept the Buzz feed API request to fetch initial data
         cy.intercept(
           'GET',
           '/web/index.php/api/v2/buzz/feed?limit=10&offset=0&sortOrder=DESC&sortField=share.createdAtUtc'
         ).as('getFeed');
 
-        // Navigate to the Buzz page
-        cy.contains('Buzz').click();
+        cy.contains(selectors.buzzTab).click();
 
-        // Wait for the feed API response
         cy.wait('@getFeed')
           .then((interception) => {
-            // Extract the first post from the API response
             firstPost = interception.response?.body.data[0];
-
-            // Assert the first post data exists
             expect(firstPost).to.exist;
           })
           .then(() => {
-            // Intercept the like action with no response simulation
-            // Intercept the like/unlike API request
             const likeAction = firstPost.liked ? 'DELETE' : 'POST';
 
             cy.intercept(
               likeAction,
               `/web/index.php/api/v2/buzz/shares/${firstPost.id}/likes`,
-              { forceNetworkError: true } // Simulates no response from the server
+              { forceNetworkError: true }
             ).as('likeNoResponse');
 
-            // Locate the first post and attempt to like it
-            cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
-              .should('be.visible')
-              .parents('.orangehrm-buzz') // Navigate to the parent post element
-              .within(() => {
-                cy.get('#heart-svg').click(); // Click the like button
-              });
+            findAndInteractWithPost(
+              firstPost.createdDate,
+              firstPost.createdTime,
+              (postElement) => {
+                postElement.get(selectors.likeButton).click();
+              }
+            );
           });
       });
 
       it('should handle no response from the server gracefully', () => {
-        // Assert that the error toast is displayed
-        cy.get('.oxd-toast--error')
+        cy.wait('@likeNoResponse');
+
+        cy.get(selectors.toastError)
           .should('be.visible')
           .within(() => {
-            cy.get('.oxd-text--toast-title').should('contain', 'Error');
-            cy.get('.oxd-text--toast-message').should(
+            cy.get(selectors.toastTitle).should('contain', 'Error');
+            cy.get(selectors.toastMessage).should(
               'contain',
               'Unexpected Error!'
             );

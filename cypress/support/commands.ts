@@ -93,3 +93,13 @@ Cypress.Commands.add(
     return cy.contains(localDateTime).should('be.visible');
   }
 );
+
+Cypress.Commands.add('clearAndType', (selector: string, value?: string) => {
+  cy.get(selector)
+    .clear()
+    .then(($input) => {
+      if (value && value.trim() !== '') {
+        cy.wrap($input).type(value);
+      }
+    });
+});

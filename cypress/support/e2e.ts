@@ -41,6 +41,10 @@ declare global {
         createdDate: string,
         createdTime: string
       ): Chainable<JQuery<HTMLElement>>;
+      clearAndType(
+        selector: string,
+        value?: string
+      ): Chainable<JQuery<HTMLElement>>;
     }
   }
 }
