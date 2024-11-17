@@ -1,0 +1,20 @@
+{
+  "data": {
+    "empNumber": 7,
+    "firstName": "David",
+    "middleName": "Nate",
+    "lastName": "Johnson",
+    "employeeId": "davidnj",
+    "otherId": "4957589",
+    "drivingLicenseNo": "56788",
+    "drivingLicenseExpiredDate": "2025-01-01",
+    "gender": 1,
+    "maritalStatus": "Married",
+    "birthday": "1990-01-01",
+    "terminationId": null,
+    "nationality": {
+      "id": 68,
+      "name": "German"
+    }
+  }
+}

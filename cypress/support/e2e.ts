@@ -14,7 +14,28 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+declare namespace Cypress {
+  interface Chainable {}
+}
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Custom command to select DOM element by data-cy attribute.
+       * @example cy.dataCy('greeting')
+       */
+      findInputByLabel(label: string): Chainable<JQuery<HTMLInputElement>>;
+
+      findSelectByLabel(label: string): Chainable<JQuery<HTMLElement>>;
+
+      findSelectByLabelAndChoose(
+        label: string,
+        value: string
+      ): Chainable<JQuery<HTMLElement>>;
+    }
+  }
+}
