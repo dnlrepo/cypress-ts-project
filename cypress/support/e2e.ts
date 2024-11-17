@@ -36,6 +36,11 @@ declare global {
         label: string,
         value: string
       ): Chainable<JQuery<HTMLElement>>;
+
+      findPostByDateTime(
+        createdDate: string,
+        createdTime: string
+      ): Chainable<JQuery<HTMLElement>>;
     }
   }
 }

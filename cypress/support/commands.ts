@@ -74,3 +74,22 @@ Cypress.Commands.add(
       .click(); // Select the value
   }
 );
+
+import moment from 'moment-timezone';
+
+Cypress.Commands.add(
+  'findPostByDateTime',
+  (createdDate: string, createdTime: string) => {
+    // Combine date and time into a single string
+    const apiDateTime = `${createdDate} ${createdTime}`;
+
+    // Convert API time to local timezone and format it to match the UI
+    const localDateTime = moment
+      .tz(apiDateTime, 'YYYY-MM-DD hh:mm A', 'UTC')
+      .local() // Converts to the local timezone of your system
+      .format('YYYY-DD-MM hh:mm A'); // Format as required by the UI
+
+    // Return the Cypress chainable for the located element
+    return cy.contains(localDateTime).should('be.visible');
+  }
+);

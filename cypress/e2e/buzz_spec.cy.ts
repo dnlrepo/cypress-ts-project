@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 describe('When navigating to the homepage', () => {
   beforeEach(() => {
     cy.visit('/'); // Navigate to the login page
@@ -36,8 +37,7 @@ describe('When navigating to the homepage', () => {
         // Assert the first post data exists
         expect(firstPost).to.exist;
 
-        // Locate the first post in the UI using the post text
-        cy.contains('.orangehrm-buzz-post-body-text', firstPost.text)
+        cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
           .should('be.visible')
           .parents('.orangehrm-buzz') // Navigate to the parent post element
           .within(() => {
@@ -59,7 +59,7 @@ describe('When navigating to the homepage', () => {
         let initialLikes: any = null;
         beforeEach(() => {
           // Locate the first post in the UI using the post text
-          cy.contains('.orangehrm-buzz-post-body-text', firstPost.text)
+          cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
             .should('be.visible')
             .parents('.orangehrm-buzz') // Navigate to the parent post element
             .within(() => {
@@ -106,7 +106,7 @@ describe('When navigating to the homepage', () => {
         beforeEach(() => {
           cy.wait('@getFeed').then((interception) => {
             // Locate the first post in the UI using the post text
-            cy.contains('.orangehrm-buzz-post-body-text', firstPost.text)
+            cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
               .should('be.visible')
               .parents('.orangehrm-buzz') // Navigate to the parent post element
               .within(() => {
@@ -247,7 +247,7 @@ describe('When navigating to the homepage', () => {
             ).as('likeNoResponse');
 
             // Locate the first post and attempt to like it
-            cy.contains('.orangehrm-buzz-post-body-text', firstPost.text)
+            cy.findPostByDateTime(firstPost.createdDate, firstPost.createdTime)
               .should('be.visible')
               .parents('.orangehrm-buzz') // Navigate to the parent post element
               .within(() => {
