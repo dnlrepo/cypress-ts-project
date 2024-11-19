@@ -48,6 +48,14 @@ I consider this as a bug, as I did not find a way that the application is lettin
 
 I have diasbled the assertions for the date field, and changed one of my cy.commands that were using date to locate an element.
 
+## Why did I use both JSON and TypeScript Fixtures?
+
+JSON: Used for static test data (e.g., user details) that's easy to maintain and universally compatible with cy.fixture() for mock API responses and UI validation.
+
+TypeScript: Provides type safety and dynamic data generation, allowing for reliable, scalable, and reusable test configurations. It also enables data transformation and supports system variables for multiple environments, making it flexible for diverse testing needs.
+
+By combining both, it is possible to balance simplicity for static data with flexibility and error prevention for dynamic test scenarios.
+
 
 ## Assumptions Made and Additional Notes
 
