@@ -43,6 +43,7 @@ Ensure the following tools are installed on your machine:
 
 I noticed that every few runs the date format will change, casuing the automation to fail.
 I consider this as a bug, as I did not find a way that the application is letting the user dictate his date format, and this change is coming directly from the UI code, and hence cannot be mocked.
+
 <img width="389" alt="image" src="https://github.com/user-attachments/assets/4153a89e-6cf0-4549-94a6-31527c1e280b">
 
 I have diasbled the assertions for the date field, and changed one of my cy.commands that were using date to locate an element.
