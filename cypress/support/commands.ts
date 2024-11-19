@@ -128,17 +128,16 @@ Cypress.Commands.add('login', () => {
   cy.wait('@loginValidationRequest');
 });
 
-const assertToastMessage = (
-  type: 'error' | 'success',
-  title: string,
-  message: string
-) => {
-  const toastSelector =
-    type === 'error' ? selectors.toastError : selectors.toastSuccess;
-  cy.get(toastSelector)
-    .should('be.visible')
-    .within(() => {
-      cy.get(selectors.toastTitle).should('contain', title);
-      cy.get(selectors.toastMessage).should('contain', message);
-    });
-};
+Cypress.Commands.add(
+  'assertToastMessage',
+  (type: 'error' | 'success', title: string, message: string) => {
+    const toastSelector =
+      type === 'error' ? selectors.toastError : selectors.toastSuccess;
+    cy.get(toastSelector)
+      .should('be.visible')
+      .within(() => {
+        cy.get(selectors.toastTitle).should('contain', title);
+        cy.get(selectors.toastMessage).should('contain', message);
+      });
+  }
+);
