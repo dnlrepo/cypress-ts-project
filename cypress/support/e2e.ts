@@ -37,10 +37,7 @@ declare global {
         value: string
       ): Chainable<JQuery<HTMLElement>>;
 
-      findPostByDateTime(
-        createdDate: string,
-        createdTime: string
-      ): Chainable<JQuery<HTMLElement>>;
+      findFirstPostByName(): Chainable<JQuery<HTMLElement>>;
       clearAndType(
         selector: string,
         value?: string

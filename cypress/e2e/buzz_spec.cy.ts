@@ -28,7 +28,7 @@ const findAndInteractWithPost = (
   time: string,
   action: (postElement: Cypress.Chainable) => void
 ) => {
-  cy.findPostByDateTime(date, time)
+  cy.findFirstPostByName()
     .should('be.visible')
     .parents(selectors.buzzPost)
     .within(() => action(cy.wrap(this)));
@@ -177,19 +177,14 @@ describe('When navigating to the homepage', () => {
                 rels: [],
               },
             }
-          ).as('mockedFeed');
+          ).as('getFeed');
         });
 
         cy.contains(inputData.buzzTab).click();
-
-        cy.wait('@mockedFeed');
       });
 
       it('should display the mocked post data correctly in the UI', () => {
-        cy.findPostByDateTime(
-          mockedFirstPost.createdDate,
-          mockedFirstPost.createdTime
-        )
+        cy.findFirstPostByName()
           .should('be.visible')
           .parents(selectors.buzzPost)
           .within(() => {

@@ -77,24 +77,30 @@ Cypress.Commands.add(
   }
 );
 
-import moment from 'moment-timezone';
+Cypress.Commands.add('findFirstPostByName', () => {
+  // Intercept the Buzz feed API request
+  cy.intercept(
+    'GET',
+    '/web/index.php/api/v2/buzz/feed?limit=10&offset=0&sortOrder=DESC&sortField=share.createdAtUtc'
+  ).as('getFeed');
 
-Cypress.Commands.add(
-  'findPostByDateTime',
-  (createdDate: string, createdTime: string) => {
-    // Combine date and time into a single string
-    const apiDateTime = `${createdDate} ${createdTime}`;
+  // Wait for the feed API response and extract the first post
+  return cy.wait('@getFeed').then((interception) => {
+    const firstPost = interception.response?.body.data[0];
+    expect(firstPost).to.exist;
 
-    // Convert API time to local timezone and format it to match the UI
-    const localDateTime = moment
-      .tz(apiDateTime, 'YYYY-MM-DD hh:mm A', 'UTC')
-      .local() // Converts to the local timezone of your system
-      .format('YYYY-DD-MM hh:mm A'); // Format as required by the UI
+    // Construct the full name of the employee
+    const { firstName, middleName, lastName } = firstPost.employee;
+    const fullName = middleName
+      ? `${firstName} ${middleName} ${lastName}`
+      : `${firstName} ${lastName}`;
 
     // Return the Cypress chainable for the located element
-    return cy.contains(localDateTime).should('be.visible');
-  }
-);
+    return cy
+      .contains('.orangehrm-buzz-post-header-text .oxd-text--p', fullName)
+      .should('be.visible');
+  });
+});
 
 Cypress.Commands.add('clearAndType', (selector: string, value?: string) => {
   cy.get(selector)
