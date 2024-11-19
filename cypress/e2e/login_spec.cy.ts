@@ -1,4 +1,5 @@
 import { selectors } from 'cypress/fixtures/selectors';
+import { inputData } from 'cypress/fixtures/input_data';
 
 describe('When navigating to the homepage', () => {
   beforeEach(() => {
@@ -10,8 +11,8 @@ describe('When navigating to the homepage', () => {
 
   describe('when entering valid login credentials', () => {
     beforeEach(() => {
-      cy.clearAndType(selectors.usernameInput, 'Admin');
-      cy.clearAndType(selectors.passwordInput, 'admin123');
+      cy.clearAndType(selectors.usernameInput, inputData.validUsername);
+      cy.clearAndType(selectors.passwordInput, inputData.validPassword);
       cy.get(selectors.submitButton).click();
     });
 
@@ -32,8 +33,8 @@ describe('When navigating to the homepage', () => {
 
   describe('when entering invalid login credentials', () => {
     beforeEach(() => {
-      cy.clearAndType(selectors.usernameInput, 'InvalidUser');
-      cy.clearAndType(selectors.passwordInput, 'wrongPassword');
+      cy.clearAndType(selectors.usernameInput, inputData.invalidUsername);
+      cy.clearAndType(selectors.passwordInput, inputData.invalidPassword);
       cy.get(selectors.submitButton).click();
     });
 
@@ -61,8 +62,8 @@ describe('When mocking login HTML response with a different error string', () =>
       }).as('loginRequest');
     });
 
-    cy.clearAndType(selectors.usernameInput, 'InvalidUser');
-    cy.clearAndType(selectors.passwordInput, 'InvalidPassword');
+    cy.clearAndType(selectors.usernameInput, inputData.invalidUsername);
+    cy.clearAndType(selectors.passwordInput, inputData.invalidPassword);
     cy.get(selectors.submitButton).click();
 
     cy.wait('@loginRequest');

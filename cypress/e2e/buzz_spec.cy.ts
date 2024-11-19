@@ -1,5 +1,5 @@
 import { selectors } from 'cypress/fixtures/selectors';
-
+import { inputData } from 'cypress/fixtures/input_data';
 // Utility Functions
 
 const validatePostStats = (
@@ -37,23 +37,18 @@ const findAndInteractWithPost = (
 describe('When navigating to the homepage', () => {
   beforeEach(() => {
     cy.visit('/');
-    cy.intercept('POST', '/web/index.php/auth/validate').as(
-      'loginValidationRequest'
-    );
   });
 
   describe('when entering valid login credentials', () => {
     beforeEach(() => {
-      cy.clearAndType(selectors.usernameInput, 'Admin');
-      cy.clearAndType(selectors.passwordInput, 'admin123');
-      cy.get(selectors.submitButton).click();
+      cy.login(inputData.validUsername, inputData.validPassword);
     });
 
     describe('when navigating to the Buzz page and intercepting the first post request', () => {
       let firstPost: any;
 
       beforeEach(() => {
-        cy.contains(selectors.buzzTab).click();
+        cy.contains(inputData.buzzTab).click();
 
         cy.intercept(
           'GET',
@@ -185,7 +180,7 @@ describe('When navigating to the homepage', () => {
           ).as('mockedFeed');
         });
 
-        cy.contains(selectors.buzzTab).click();
+        cy.contains(inputData.buzzTab).click();
 
         cy.wait('@mockedFeed');
       });
@@ -231,7 +226,7 @@ describe('When navigating to the homepage', () => {
           '/web/index.php/api/v2/buzz/feed?limit=10&offset=0&sortOrder=DESC&sortField=share.createdAtUtc'
         ).as('getFeed');
 
-        cy.contains(selectors.buzzTab).click();
+        cy.contains(inputData.buzzTab).click();
 
         cy.wait('@getFeed')
           .then((interception) => {

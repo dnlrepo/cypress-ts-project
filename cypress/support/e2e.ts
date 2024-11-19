@@ -45,6 +45,8 @@ declare global {
         selector: string,
         value?: string
       ): Chainable<JQuery<HTMLElement>>;
+
+      login(username: string, password: string): Chainable<JQuery<HTMLElement>>;
     }
   }
 }

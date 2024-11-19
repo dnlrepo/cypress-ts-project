@@ -1,0 +1,15 @@
+export const inputData = {
+  validUsername: 'Admin',
+  validPassword: 'admin123',
+  invalidUsername: 'invalidUser',
+  invalidPassword: 'invalidPassword',
+  employeeIdLabel: 'Employee Id',
+  otherIdLabel: 'Other Id',
+  licenseNumberLabel: 'License Number',
+  licenseExpiryDateLabel: 'License Expiry Date',
+  nationalityLabel: 'Nationality',
+  maritalStatusLabel: 'Marital Status',
+  dateOfBirthLabel: 'Date of Birth',
+  myInfoTab: 'My Info',
+  buzzTab: 'Buzz',
+};

@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+import { inputData } from 'cypress/fixtures/input_data';
+import { selectors } from 'cypress/fixtures/selectors';
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -102,4 +104,20 @@ Cypress.Commands.add('clearAndType', (selector: string, value?: string) => {
         cy.wrap($input).type(value);
       }
     });
+});
+
+Cypress.Commands.add('login', (username, password) => {
+  // Intercept the personal details API request with a wildcard
+  cy.intercept('POST', '/web/index.php/auth/validate').as(
+    'loginValidationRequest'
+  );
+
+  // Fill in login credentials
+  cy.clearAndType(selectors.usernameInput, inputData.validUsername);
+  cy.clearAndType(selectors.passwordInput, inputData.validPassword);
+  // Submit the login form
+  cy.get(selectors.submitButton).click();
+
+  // Wait for login validation
+  cy.wait('@loginValidationRequest');
 });

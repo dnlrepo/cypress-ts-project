@@ -16,8 +16,6 @@ export const selectors = {
   inputGroupMessage: '.oxd-input-group__message',
   radioWrapper: '.oxd-radio-wrapper',
   submitButtonPrimary: '[type="submit"]',
-  myInfoTab: 'My Info',
-  buzzTab: 'Buzz',
   buzzPost: '.orangehrm-buzz',
   buzzPostBodyText: '.orangehrm-buzz-post-body-text',
   buzzStatsRow: '.orangehrm-buzz-stats-row',

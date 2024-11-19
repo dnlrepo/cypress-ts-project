@@ -1,5 +1,5 @@
 import { selectors } from 'cypress/fixtures/selectors';
-
+import { inputData } from 'cypress/fixtures/input_data';
 const assertToastMessage = (
   type: 'error' | 'success',
   title: string,
@@ -42,52 +42,55 @@ describe('When navigating to the homepage', () => {
 
   describe('when entering valid login credentials', () => {
     beforeEach(() => {
-      cy.intercept(
-        'GET',
-        '/web/index.php/api/v2/pim/employees/7/personal-details'
-      ).as('getPersonalDetails');
-      cy.clearAndType(selectors.usernameInput, 'Admin');
-      cy.clearAndType(selectors.passwordInput, 'admin123');
-      cy.get(selectors.submitButton).click();
-      cy.wait('@loginValidationRequest');
+      cy.login(inputData.validUsername, inputData.validPassword);
     });
 
     describe('when navigating to "My Info" page and filling the form', () => {
       beforeEach(() => {
         cy.intercept(
           'PUT',
-          '/web/index.php/api/v2/pim/employees/7/personal-details'
+          '/web/index.php/api/v2/pim/employees/*/personal-details'
         ).as('putPersonalDetails');
-        cy.contains('My Info').click();
+        cy.intercept(
+          'GET',
+          '/web/index.php/api/v2/pim/employees/*/personal-details'
+        ).as('getPersonalDetails');
+        cy.contains(inputData.myInfoTab).click();
         cy.wait('@getPersonalDetails');
         cy.fixture('user_details.json').then((testData) => {
           testData = testData.data;
           cy.clearAndType(selectors.firstNameInput, testData.firstName);
           cy.clearAndType(selectors.middleNameInput, testData.middleName);
           cy.clearAndType(selectors.lastNameInput, testData.lastName);
-          cy.findInputByLabel('Employee Id').clear().type(testData.employeeId);
-          cy.findInputByLabel('Other Id').clear().type(testData.otherId);
-          cy.findInputByLabel('License Number')
+          cy.findInputByLabel(inputData.employeeIdLabel)
+            .clear()
+            .type(testData.employeeId);
+          cy.findInputByLabel(inputData.otherIdLabel)
+            .clear()
+            .type(testData.otherId);
+          cy.findInputByLabel(inputData.licenseNumberLabel)
             .clear()
             .type(testData.drivingLicenseNo);
-          cy.findInputByLabel('License Expiry Date')
+          cy.findInputByLabel(inputData.licenseExpiryDateLabel)
             .clear()
             .type(testData.drivingLicenseExpiredDate);
           closeCalendar();
 
           cy.findSelectByLabelAndChoose(
-            'Nationality',
+            inputData.nationalityLabel,
             testData.nationality.name
           );
           cy.findSelectByLabelAndChoose(
-            'Marital Status',
+            inputData.maritalStatusLabel,
             testData.maritalStatus
           );
-          cy.findInputByLabel('Date of Birth').clear().type(testData.birthday);
+          cy.findInputByLabel(inputData.dateOfBirthLabel)
+            .clear()
+            .type(testData.birthday);
           closeCalendar();
 
           cy.get(selectors.radioWrapper)
-            .contains(testData.gender === 1 ? 'Male' : 'Female')
+            .contains(testData.gender === 1 ? 'Male' : 'Female') // map the value "1" to the way it is presented in the UI
             .parent()
             .click();
         });
@@ -122,34 +125,34 @@ describe('When navigating to the homepage', () => {
             'have.value',
             testData.lastName
           );
-          cy.findInputByLabel('Employee Id').should(
+          cy.findInputByLabel(inputData.employeeIdLabel).should(
             'have.value',
             testData.employeeId
           );
-          cy.findInputByLabel('Other Id').should(
+          cy.findInputByLabel(inputData.otherIdLabel).should(
             'have.value',
             testData.otherId
           );
-          cy.findInputByLabel('License Number').should(
+          cy.findInputByLabel(inputData.licenseNumberLabel).should(
             'have.value',
             testData.drivingLicenseNo
           );
-          cy.findInputByLabel('License Expiry Date').should(
+          cy.findInputByLabel(inputData.licenseExpiryDateLabel).should(
             'have.value',
             testData.drivingLicenseExpiredDate
           );
-          cy.findSelectByLabel('Nationality')
+          cy.findSelectByLabel(inputData.nationalityLabel)
             .invoke('text')
             .should('eq', testData.nationality.name);
-          cy.findSelectByLabel('Marital Status')
+          cy.findSelectByLabel(inputData.maritalStatusLabel)
             .invoke('text')
             .should('eq', testData.maritalStatus);
-          cy.findInputByLabel('Date of Birth').should(
+          cy.findInputByLabel(inputData.dateOfBirthLabel).should(
             'have.value',
             testData.birthday
           );
           cy.get(selectors.radioWrapper)
-            .contains(testData.gender === 1 ? 'Male' : 'Female')
+            .contains(testData.gender === 1 ? 'Male' : 'Female') // map the value "1" to the way it is presented in the UI
             .find('input[type="radio"]')
             .should('be.checked');
         });
@@ -160,9 +163,9 @@ describe('When navigating to the homepage', () => {
       beforeEach(() => {
         cy.intercept(
           'GET',
-          '/web/index.php/api/v2/pim/employees/7/personal-details'
+          '/web/index.php/api/v2/pim/employees/*/personal-details'
         ).as('getPersonalDetails');
-        cy.contains('My Info').click();
+        cy.contains(inputData.myInfoTab).click();
         cy.wait('@getPersonalDetails');
 
         cy.clearAndType(selectors.firstNameInput, '');
@@ -185,7 +188,7 @@ describe('When navigating to the homepage', () => {
         cy.fixture('user_details.json').then((mockResponse) => {
           cy.intercept(
             'GET',
-            '/web/index.php/api/v2/pim/employees/7/personal-details',
+            '/web/index.php/api/v2/pim/employees/*/personal-details',
             {
               statusCode: 200,
               body: mockResponse, // Use the updated fixture as the mock response
@@ -193,7 +196,7 @@ describe('When navigating to the homepage', () => {
           ).as('getMockedPersonalDetails');
         });
 
-        cy.contains(selectors.myInfoTab).click();
+        cy.contains(inputData.myInfoTab).click();
         cy.wait('@getMockedPersonalDetails');
       });
 
@@ -215,20 +218,20 @@ describe('When navigating to the homepage', () => {
             testData.lastName
           );
 
-          cy.findInputByLabel('Employee Id').should(
+          cy.findInputByLabel(inputData.employeeIdLabel).should(
             'have.value',
             testData.employeeId
           );
-          cy.findInputByLabel('Other Id').should(
+          cy.findInputByLabel(inputData.otherIdLabel).should(
             'have.value',
             testData.otherId
           );
 
-          cy.findInputByLabel('License Number').should(
+          cy.findInputByLabel(inputData.licenseNumberLabel).should(
             'have.value',
             testData.drivingLicenseNo
           );
-          cy.findInputByLabel('License Expiry Date').should(
+          cy.findInputByLabel(inputData.licenseExpiryDateLabel).should(
             'have.value',
             testData.drivingLicenseExpiredDate
           );
@@ -240,7 +243,7 @@ describe('When navigating to the homepage', () => {
             .invoke('text')
             .should('eq', testData.maritalStatus);
 
-          cy.findInputByLabel('Date of Birth').should(
+          cy.findInputByLabel(inputData.dateOfBirthLabel).should(
             'have.value',
             testData.birthday
           );
@@ -261,16 +264,16 @@ describe('When navigating to the homepage', () => {
 
         cy.intercept(
           'GET',
-          '/web/index.php/api/v2/pim/employees/7/personal-details'
+          '/web/index.php/api/v2/pim/employees/*/personal-details'
         ).as('getPersonalDetails');
-        cy.contains('My Info').click();
+        cy.contains(inputData.myInfoTab).click();
         cy.wait('@getPersonalDetails').then((interception) => {
           expect(interception.response?.body.data).to.exist;
         });
 
         cy.intercept(
           'PUT',
-          '/web/index.php/api/v2/pim/employees/7/personal-details',
+          '/web/index.php/api/v2/pim/employees/*/personal-details',
           {
             forceNetworkError: true,
           }
