@@ -2,21 +2,8 @@ import { selectors } from 'cypress/fixtures/selectors';
 import { inputData } from 'cypress/fixtures/input_data';
 
 // Utility Functions
-// Added Utility functions here instead of cy.commands for non complex logic functions that are reused only in this spec
-const assertToastMessage = (
-  type: 'error' | 'success',
-  title: string,
-  message: string
-) => {
-  const toastSelector =
-    type === 'error' ? selectors.toastError : selectors.toastSuccess;
-  cy.get(toastSelector)
-    .should('be.visible')
-    .within(() => {
-      cy.get(selectors.toastTitle).should('contain', title);
-      cy.get(selectors.toastMessage).should('contain', message);
-    });
-};
+// Some functions are defined directly in this spec file instead of adding them to cy.commands.
+// This is done for simpler logic that is reused exclusively within this spec.
 
 const assertInputError = (selector: string, errorMessage: string) => {
   cy.get(selector)
@@ -115,14 +102,11 @@ const inputFieldsData = () => {
 describe('When navigating to the homepage', () => {
   beforeEach(() => {
     cy.visit('/');
-    cy.intercept('POST', '/web/index.php/auth/validate').as(
-      'loginValidationRequest'
-    );
   });
 
   describe('when entering valid login credentials', () => {
     beforeEach(() => {
-      cy.login(inputData.validUsername, inputData.validPassword);
+      cy.login();
     });
 
     describe('when navigating to "My Info" page and filling the form', () => {
@@ -143,7 +127,7 @@ describe('When navigating to the homepage', () => {
       });
 
       it('should verify success toast, validate API response, and check saved field values', () => {
-        assertToastMessage('success', 'Success', 'Successfully Updated');
+        cy.assertToastMessage('success', 'Success', 'Successfully Updated');
 
         cy.wait('@putPersonalDetails').then(({ response }) => {
           expect(response.statusCode).to.eq(200);
@@ -201,7 +185,6 @@ describe('When navigating to the homepage', () => {
       });
 
       it('should display the mocked data correctly in the UI', () => {
-        // Verify that the mocked data is displayed correctly in the UI
         assertFieldsData();
       });
     });
@@ -235,7 +218,7 @@ describe('When navigating to the homepage', () => {
       it('should handle no response from the server gracefully', () => {
         cy.wait('@putPersonalDetails', { timeout: 10000 });
 
-        assertToastMessage('error', 'Error', 'Unexpected Error!');
+        cy.assertToastMessage('error', 'Error', 'Unexpected Error!');
       });
     });
   });

@@ -112,7 +112,7 @@ Cypress.Commands.add('clearAndType', (selector: string, value?: string) => {
     });
 });
 
-Cypress.Commands.add('login', (username, password) => {
+Cypress.Commands.add('login', () => {
   // Intercept the personal details API request with a wildcard
   cy.intercept('POST', '/web/index.php/auth/validate').as(
     'loginValidationRequest'
@@ -127,3 +127,18 @@ Cypress.Commands.add('login', (username, password) => {
   // Wait for login validation
   cy.wait('@loginValidationRequest');
 });
+
+const assertToastMessage = (
+  type: 'error' | 'success',
+  title: string,
+  message: string
+) => {
+  const toastSelector =
+    type === 'error' ? selectors.toastError : selectors.toastSuccess;
+  cy.get(toastSelector)
+    .should('be.visible')
+    .within(() => {
+      cy.get(selectors.toastTitle).should('contain', title);
+      cy.get(selectors.toastMessage).should('contain', message);
+    });
+};

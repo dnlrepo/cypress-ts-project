@@ -43,7 +43,13 @@ declare global {
         value?: string
       ): Chainable<JQuery<HTMLElement>>;
 
-      login(username: string, password: string): Chainable<JQuery<HTMLElement>>;
+      login(): Chainable<JQuery<HTMLElement>>;
+
+      assertToastMessage(
+        type: 'error' | 'success',
+        title: string,
+        message: string
+      ): Chainable<JQuery<HTMLElement>>;
     }
   }
 }

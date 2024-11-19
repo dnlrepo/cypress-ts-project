@@ -2,7 +2,8 @@ import { selectors } from 'cypress/fixtures/selectors';
 import { inputData } from 'cypress/fixtures/input_data';
 
 // Utility Functions
-// Added Utility functions here instead of cy.commands for non complex logic functions that are reused only in this spec
+// Some functions are defined directly in this spec file instead of adding them to cy.commands.
+// This is done for simpler logic that is reused exclusively within this spec.
 const validatePostStats = (
   post: any,
   likesSelector: string,
@@ -42,7 +43,7 @@ describe('When navigating to the homepage', () => {
 
   describe('when entering valid login credentials', () => {
     beforeEach(() => {
-      cy.login(inputData.validUsername, inputData.validPassword);
+      cy.login();
     });
 
     describe('when navigating to the Buzz page and intercepting the first post request', () => {

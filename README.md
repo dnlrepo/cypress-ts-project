@@ -56,6 +56,21 @@ TypeScript: Provides type safety and dynamic data generation, allowing for relia
 
 By combining both, it is possible to balance simplicity for static data with flexibility and error prevention for dynamic test scenarios.
 
+## Utility Functions vs. cy.commands
+
+This project utilizes both utility functions and custom Cypress commands (cy.commands) to streamline the test logic and enhance readability. Here's the distinction:
+
+### Utility Functions: These are defined directly within individual spec files for logic that is:
+
+Simple and non-complex.
+Specific to a single spec file.
+Primarily used to simplify long Cypress command chains, improving readability and maintainability.
+
+### Custom Cypress Commands (cy.commands): These are implemented for:
+
+Logic that is more complex or involves reusable patterns.
+Functionality that is likely to be used across multiple spec files, ensuring consistency and scalability.
+By adopting this approach, the test suite remains modular, readable, and easy to maintain while avoiding unnecessary overhead from over-generalization.
 
 ## Assumptions Made and Additional Notes
 
