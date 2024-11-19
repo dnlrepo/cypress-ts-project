@@ -1,7 +1,8 @@
 import { selectors } from 'cypress/fixtures/selectors';
 import { inputData } from 'cypress/fixtures/input_data';
-// Utility Functions
 
+// Utility Functions
+// Added Utility functions here instead of cy.commands for non complex logic functions that are reused only in this spec
 const validatePostStats = (
   post: any,
   likesSelector: string,
